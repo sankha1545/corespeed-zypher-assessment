@@ -1,1 +1,10 @@
-{"tasks":{"start":"deno task run-server","run-server":"deno run --allow-net=127.0.0.1:8080 --allow-read=./demo-workspace --allow-read=./web --allow-read=./src --allow-env --allow-write=./demo-workspace src/server.ts"}}
+{
+   
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.unstable", "dom"]
+  },
+  "tasks": {
+    "start": "deno task run-server",
+    "run-server": "deno run --allow-net=127.0.0.1:8080 --allow-read=./demo-workspace --allow-read=./web --allow-read=./src --allow-env --allow-write=./demo-workspace src/server.ts"
+  }
+}
