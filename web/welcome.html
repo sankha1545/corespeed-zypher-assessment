@@ -3,346 +3,312 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Welcome — 3D Landing</title>
-  <meta name="description" content="A small 3D animated welcome page with a polished CTA" />
+  <title>NeuroFlux — Minimal Landing (Image Logo)</title>
+  <meta name="description" content="NeuroFlux — minimal black landing with image logo and glowing CTA. No layout shifts." />
+
   <style>
-    /* =====================
-       Variables & reset
-       ===================== */
-    :root{
-      --bg-1: #07070a;
-      --bg-2: #0f1724;
-      --accent-1: 74,142,240;    /* rgb for glow */
-      --accent-2: 120, 87, 255;
-      --glass: rgba(255,255,255,0.06);
-      --glass-2: rgba(255,255,255,0.03);
-      --text: #e6eef8;
-      --muted: #9fb0d9;
-      --card-w: min(720px, 92vw);
+    :root {
+      --bg: #000;
+      --text: #f2f6fb;
+      --muted: #9aa8c6;
+
+      --btn-width: 340px;
+      --btn-height: 68px;
+      --btn-radius: 14px;
+
+      --transition-fast: 180ms cubic-bezier(.2,.9,.3,1);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
+
+    *, *::before, *::after { box-sizing:border-box; }
+
+    html {
+      height: 100%;
+      scrollbar-gutter: stable both-edges; /* prevents layout jumps */
+    }
+
+    body {
       margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(74,142,240,0.06), transparent 8%),
-                  radial-gradient(900px 400px at 90% 90%, rgba(120,87,255,0.04), transparent 6%),
-                  linear-gradient(180deg,var(--bg-1),var(--bg-2));
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      display:grid;
-      place-items:center;
       min-height:100vh;
-      overflow:hidden;
-    }
+      background:var(--bg);
+      color:var(--text);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
 
-    /* Background canvas sits behind everything */
-    canvas#bg {
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      z-index:0;
-      display:block;
-      pointer-events:none;
-    }
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:none;
 
-    /* Main 3D scene container */
-    .scene{
-      position:relative;
-      width:var(--card-w);
-      max-width:calc(var(--card-w));
-      transform-style:preserve-3d;
-      perspective:1200px;
-      z-index:1;
-    }
-
-    /* Card that floats in 3D space */
-    .card{
-      position:relative;
-      border-radius:18px;
-      padding:48px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-      box-shadow: 0 20px 60px rgba(5,8,20,0.6), 0 2px 8px rgba(0,0,0,0.6);
-      backdrop-filter: blur(8px) saturate(1.1);
-      transform-origin:center;
-      overflow:visible;
       display:flex;
-      gap:24px;
       align-items:center;
+      justify-content:center;
+      padding:24px;
     }
 
-    /* Left: small decorative 3D shard */
-    .shard{
-      width:120px;
-      height:120px;
-      border-radius:14px;
-      flex:0 0 120px;
-      background:linear-gradient(135deg, rgba(var(--accent-1)/1,0.12), rgba(var(--accent-2)/1,0.08));
-      box-shadow: 0 8px 30px rgba(var(--accent-2)/5), inset 0 -8px 30px rgba(0,0,0,0.25);
-      transform:translateZ(60px) rotateX(-18deg) rotateY(18deg);
+    /* =======================
+       FIXED IMAGE LOGO
+       ======================= */
+    .logo-img {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 180px;
+      height: auto;
+      z-index: 1000;
+      user-select:none;
+      pointer-events:auto;
+    }
+
+    /* =======================
+       MAIN CONTENT
+       ======================= */
+    .wrap {
+      width: min(820px, 94vw);
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      gap:28px;
+      align-items:center;
+      justify-content:center;
+      padding:28px 0;
+      contain: layout inline-size; /* prevents layout shift */
+    }
+
+    h1 {
+      margin:0;
+      font-weight:700;
+      font-size:clamp(20px,3.4vw,36px);
+      line-height:1.05;
+      letter-spacing:-0.01em;
+    }
+
+    .tagline {
+      margin-top:6px;
+      font-style:italic;
+      color:var(--muted);
+      font-size:clamp(12px,1.6vw,16px);
+    }
+
+    /* =======================
+       ROTATING TYPING LINE
+       ======================= */
+    .rotator {
+      height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      font-size:clamp(15px,2vw,20px);
+      white-space:nowrap;
+      overflow:hidden;
+      color:var(--text);
+      position:relative;
+    }
+
+    .rotator::after {
+      content:"";
+      width:2px;
+      height:1.2em;
+      background:var(--text);
+      margin-left:8px;
+      animation: blink 900ms steps(1) infinite;
+    }
+
+    @keyframes blink { 50%{ opacity:0; } }
+
+    /* =======================
+       CTA BUTTON
+       ======================= */
+    .cta-wrap { width:100%; display:flex; justify-content:center; }
+
+    .glow-btn {
+      --w:var(--btn-width);
+      --h:var(--btn-height);
+
+      width:var(--w);
+      height:var(--h);
       display:grid;
       place-items:center;
-    }
+      padding:0 22px;
 
-    /* Content */
-    .content{
-      flex:1 1 auto;
-      min-width:0;
-      transform:translateZ(36px);
-    }
-    h1{
-      margin:0 0 8px 0;
-      font-size:clamp(22px, 3vw, 36px);
-      letter-spacing:-0.02em;
-    }
-    p.lead{
-      margin:0 0 20px 0;
-      color:var(--muted);
-      font-size:clamp(14px, 1.6vw, 16px);
-    }
+      border-radius:var(--btn-radius);
+      border:2px solid rgba(255,255,255,0.06);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:0 8px 30px rgba(0,0,0,0.6);
 
-    /* CTA button */
-    .cta{
-      --padY: 14px;
-      --padX: 36px;
-      display:inline-grid;
-      place-items:center;
-      gap:12px;
-      position:relative;
-      padding:var(--padY) var(--padX);
-      font-weight:600;
-      font-size:16px;
-      color: white;
-      background:linear-gradient(90deg, rgba(var(--accent-1)/1,0.98), rgba(var(--accent-2)/1,0.98));
-      border:none;
-      border-radius:14px;
-      box-shadow: 0 8px 30px rgba(var(--accent-2)/8), 0 2px 6px rgba(0,0,0,0.45), inset 0 -2px 6px rgba(255,255,255,0.03);
+      color:var(--text);
+      font-weight:700;
+      font-size:18px;
       cursor:pointer;
-      transform-style:preserve-3d;
-      transition:transform 220ms cubic-bezier(.2,.9,.3,1), box-shadow 220ms;
-      will-change:transform;
-      z-index:2;
-      overflow:hidden;
+      position:relative;
+
+      transition:transform var(--transition-fast), box-shadow var(--transition-fast);
+      overflow:visible;
     }
 
-    /* Glow and hover state */
-    .cta::before{
+    .glow-btn:hover { transform:translateY(-3px); }
+    .glow-btn:focus {
+      outline:none;
+      transform:translateY(-2px);
+      box-shadow:0 8px 40px rgba(255,255,255,0.06), 0 0 0 6px rgba(255,255,255,0.03);
+    }
+
+    .glow-btn::before,
+    .glow-btn::after {
       content:"";
       position:absolute;
-      inset:-40%;
-      background:radial-gradient(circle at 30% 20%, rgba(var(--accent-1)/1,0.14), transparent 10%),
-                 radial-gradient(circle at 70% 80%, rgba(var(--accent-2)/1,0.12), transparent 12%);
-      filter:blur(18px);
-      opacity:0;
-      transition:opacity 300ms;
+      inset:-8px;
+      border-radius:calc(var(--btn-radius) + 8px);
       pointer-events:none;
+      mix-blend-mode:screen;
     }
-    .cta:hover::before{opacity:1}
 
-    .cta:active{transform:translateY(2px) scale(0.995)}
-
-    /* Tilt effect applied with JS for 3D depth */
-    .tilt{ will-change: transform }
-
-    /* Ripple effect element */\    
-    .ripple{
-      position:absolute;
-      border-radius:999px;
-      transform:translate(-50%,-50%) scale(0.2);
+    .glow-btn::before {
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.98), transparent);
+      transform:rotate(45deg) translateX(-260%);
+      filter:blur(6px);
       opacity:0.9;
+      animation: sweep 2.2s linear infinite;
+    }
+
+    .glow-btn::after {
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+      transform:rotate(-45deg) translateX(260%);
+      filter:blur(5px);
+      opacity:0.85;
+      animation: sweep-back 2.2s linear infinite;
+      animation-delay:1.05s;
+    }
+
+    @keyframes sweep {
+      0% { transform:rotate(45deg) translateX(-260%); opacity:0; }
+      10% { opacity:0.9; }
+      55% { transform:rotate(45deg) translateX(40%); opacity:0.95; }
+      100% { transform:rotate(45deg) translateX(260%); opacity:0; }
+    }
+
+    @keyframes sweep-back {
+      0% { transform:rotate(-45deg) translateX(260%); opacity:0; }
+      10% { opacity:0.9; }
+      55% { transform:rotate(-45deg) translateX(-40%); opacity:0.95; }
+      100% { transform:rotate(-45deg) translateX(-260%); opacity:0; }
+    }
+
+    .inner-glow {
+      position:absolute;
+      inset:6px;
+      border-radius:calc(var(--btn-radius) - 6px);
       pointer-events:none;
-      animation:ripple 800ms cubic-bezier(.2,.7,.2,1);
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.6) 8%, rgba(255,255,255,0.06) 40%, transparent 70%);
-    }
-    @keyframes ripple{to{transform:translate(-50%,-50%) scale(6); opacity:0}}
-
-    /* tiny motion on the card to make it feel alive */
-    @keyframes floaty{
-      0%{transform:translateY(0) rotateX(0) rotateZ(0)}
-      50%{transform:translateY(-6px) rotateZ(-0.4deg)}
-      100%{transform:translateY(0) rotateZ(0)}
-    }
-    .card { animation: floaty 6s ease-in-out infinite; }
-
-    /* Accessibility + focus */
-    .cta:focus{outline:3px solid rgba(var(--accent-1)/6); outline-offset:4px}
-
-    /* Small screens */
-    @media (max-width:560px){
-      .card{padding:28px; border-radius:14px}
-      .shard{display:none}
-      .content{transform:translateZ(0)}
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), inset 0 -20px 40px rgba(255,255,255,0.02);
     }
 
-    /* Respect reduced-motion */
-    @media (prefers-reduced-motion: reduce){
-      .card, .card *{animation:none; transition:none}
+    @media (prefers-reduced-motion:reduce){
+      .glow-btn::before,
+      .glow-btn::after { animation:none; opacity:0.25; }
+      .rotator::after { animation:none; }
+    }
+
+    @media (max-width:520px){
+      :root { --btn-width:92vw; --btn-height:56px; }
+      .logo-img { width:40px; }
     }
   </style>
 </head>
+
 <body>
-  <canvas id="bg" aria-hidden="true"></canvas>
 
-  <main class="scene" role="main">
-    <section class="card" aria-labelledby="title">
-      <div class="shard" aria-hidden="true">
-        <!-- decorative 3D shard -->
-      </div>
+  <!-- IMAGE LOGO (replaces old animated wordmark) -->
+  <!-- Replace "assets/logo.png" with your image -->
+ <img src="/web/assets/images/logo.png" alt="NeuroFlux Logo" class="logo-img" />
 
-      <div class="content">
-        <h1 id="title">Welcome to My App</h1>
-        <p class="lead">A polished entrance with 3D motion — click the button to continue.</p>
- <button 
-  onclick="window.location.href='./index.html'" 
-  class="cta tilt" 
-  id="enterBtn" 
-  aria-label="Enter the app"
->
-  Enter App
-</button>
 
-      </div>
+  <main class="wrap">
+    <header style="max-width:820px;">
+      <h1>"Design is the silent ambassador of your brand."</h1>
+      <div class="tagline">A refined, minimal welcome — <em>simple actions, clear outcomes</em></div>
+    </header>
+
+    <section class="rotator" aria-live="polite" aria-atomic="true">
+      <div id="rotatingText"></div>
     </section>
+
+    <div class="cta-wrap">
+      <button class="glow-btn" id="mainCta">
+        Enter NeuroFlux
+        <span class="inner-glow"></span>
+      </button>
+    </div>
   </main>
 
   <script>
-    // Quick helper for prefers-reduced-motion
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* ============================
+       TYPING ROTATOR
+       ============================ */
+       document.getElementById("mainCta").addEventListener("click", () => {
+  window.location.href = "/web/index.html";
+});
 
-    // -----------------------
-    // Canvas background: floating particles with depth
-    // -----------------------
     (function(){
-      const canvas = document.getElementById('bg');
-      const ctx = canvas.getContext('2d');
-      let W = canvas.width = innerWidth * devicePixelRatio;
-      let H = canvas.height = innerHeight * devicePixelRatio;
-      let particles = [];
-      const COUNT = Math.round(Math.min(140, Math.max(40, innerWidth / 9)));
-      const DPR = devicePixelRatio || 1;
+      const phrases = [
+        "Fast. Focused. Functional.",
+        "Build with intention — ship with pride.",
+        "Interfaces that invite discovery.",
+        "Small details. Big impressions.",
+        "From concept to product — thoughtfully."
+      ];
 
-      function rand(min,max){return Math.random()*(max-min)+min}
+      const el = document.getElementById("rotatingText");
+      const typing = 3000, hold = 2000, deleting = 2000;
+      let i = 0;
 
-      function make(){
-        particles = [];
-        for(let i=0;i<COUNT;i++){
-          particles.push({
-            x: rand(0,W),
-            y: rand(0,H),
-            z: rand(0.2,1.8),
-            r: rand(8,36) * DPR,
-            hue: rand(200,270),
-            speed: rand(0.2,1.2)
-          })
+      const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+      async function cycle(){
+        while(true){
+          const text = phrases[i % phrases.length];
+          el.textContent = "";
+
+          const speedType = Math.max(14, Math.round(typing / text.length));
+          for(let c of text){ el.textContent += c; await sleep(speedType); }
+
+          await sleep(hold);
+
+          const speedDel = Math.max(8, Math.round(deleting / text.length));
+          for(let j=text.length; j>0; j--){ el.textContent = text.slice(0,j-1); await sleep(speedDel); }
+
+          i++;
         }
       }
 
-      function resize(){
-        W = canvas.width = innerWidth * DPR;
-        H = canvas.height = innerHeight * DPR;
-        make();
-      }
-      addEventListener('resize', ()=>{resize()});
-
-      function draw(){
-        ctx.clearRect(0,0,W,H);
-        // subtle gradient wash
-        const g = ctx.createLinearGradient(0,0,0,H);
-        g.addColorStop(0, 'rgba(12,18,34,0.12)');
-        g.addColorStop(1, 'rgba(4,6,10,0.26)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0,0,W,H);
-
-        for(const p of particles){
-          p.x += (innerWidth*0.0004) * (p.z-1) * (prefersReduced?0:1);
-          p.y += (p.speed * (p.z*0.6));
-          p.z -= 0.001 * (p.speed);
-          if(p.y - p.r > H || p.z < 0.18) {
-            p.x = rand(0,W); p.y = -p.r*2; p.z = rand(0.9,2.2); p.r = rand(6,40)*DPR; p.speed = rand(0.2,1.2);
-          }
-
-          const alpha = Math.max(0.1, Math.min(0.9, (p.z)));
-          const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*1.2);
-          grd.addColorStop(0, `rgba(255,255,255,${0.9*alpha})`);
-          grd.addColorStop(0.15, `hsla(${p.hue},80%,75%,${0.32*alpha})`);
-          grd.addColorStop(0.5, `hsla(${p.hue+40},70%,45%,${0.07*alpha})`);
-          grd.addColorStop(1, 'transparent');
-
-          ctx.beginPath();
-          ctx.fillStyle = grd;
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-          ctx.fill();
-        }
-      }
-
-      // Animation loop
-      function loop(){
-        draw();
-        requestAnimationFrame(loop);
-      }
-
-      resize();
-      if(!prefersReduced)loop();
+      cycle();
     })();
 
-    // -----------------------
-    // 3D tilt + mouse parallax for the card
-    // -----------------------
+    /* ============================
+       CTA BUTTON FEEDBACK
+       ============================ */
     (function(){
-      const scene = document.querySelector('.scene');
-      const card = document.querySelector('.card');
-      const btn = document.getElementById('enterBtn');
+      const btn = document.getElementById("mainCta");
+      btn.addEventListener("click", () => {
+        btn.animate(
+          [
+            { transform:"translateY(0) scale(1)" },
+            { transform:"translateY(2px) scale(0.995)" },
+            { transform:"translateY(0) scale(1)" }
+          ],
+          { duration:260, easing:"cubic-bezier(.2,.9,.3,1)" }
+        );
 
-      function onMove(e){
-        const rect = scene.getBoundingClientRect();
-        const cx = rect.left + rect.width/2;
-        const cy = rect.top + rect.height/2;
-        const x = (e.clientX - cx) / rect.width;
-        const y = (e.clientY - cy) / rect.height;
-
-        const rotY = x * 12; // degrees
-        const rotX = -y * 10;
-
-        card.style.transform = `translateZ(0px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-      }
-
-      function onLeave(){
-        card.style.transform = '';
-      }
-
-      if(!prefersReduced){
-        scene.addEventListener('mousemove', onMove);
-        scene.addEventListener('mouseleave', onLeave);
-      }
-
-      // Button tilt micro interaction + ripple
-      btn.addEventListener('click', (ev)=>{
-        // ripple
-        const rect = btn.getBoundingClientRect();
-        const r = document.createElement('span');
-        r.className = 'ripple';
-        r.style.left = (ev.clientX - rect.left) + 'px';
-        r.style.top = (ev.clientY - rect.top) + 'px';
-        const size = Math.max(rect.width, rect.height) * 1.8;
-        r.style.width = r.style.height = size + 'px';
-        btn.appendChild(r);
-        setTimeout(()=>r.remove(), 900);
-
-        // simulate navigation (for demo only) — replace with real navigation
-        // location.href = '/index.html';
-      });
-
-      // Give keyboard users the same press feedback
-      btn.addEventListener('keydown', (ev)=>{
-        if(ev.key === 'Enter' || ev.key === ' '){
-          btn.classList.add('active');
-          setTimeout(()=>btn.classList.remove('active'),150);
-        }
+        const old = btn.textContent;
+        btn.textContent = "Launching...";
+        btn.setAttribute("aria-disabled","true");
+        setTimeout(()=>{
+          btn.textContent = old;
+          btn.removeAttribute("aria-disabled");
+        },700);
       });
     })();
-
   </script>
+
 </body>
 </html>
