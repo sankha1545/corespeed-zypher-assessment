@@ -1,1 +1,22 @@
+# Deno
+.deno/
+
+# Local env / secrets
 .env
+.env.local
+
+# Logs
+*.log
+
+# IDEs
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node (if any)
+node_modules
+dist

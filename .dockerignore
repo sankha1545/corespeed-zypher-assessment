@@ -1,0 +1,15 @@
+# Deno cache
+.deno/
+
+# Git, IDEs and OS files
+.git
+.vscode
+desktop.ini
+
+# Local env & secrets
+.env
+
+*.log
+
+# Node / build artifacts (if any)
+
